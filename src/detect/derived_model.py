@@ -23,12 +23,33 @@ from utils.args import parse_args
 from models.classify import classifyVGG
 
 def train_derived_model(args):
+    benign_logits_lst = []
+    adv_logits_lst = []
+    SEG_NUM = args.segment_num
+
+    for segment in range(SEG_NUM):
+        data, label, Zxxs = load_data(args, segment)
+        
+        v_min = Zxxs.min(axis=(0, 1), keepdims=True)
+        v_max = Zxxs.max(axis=(0, 1), keepdims=True)
+        Zxxs = (Zxxs - v_min)/(v_max - v_min + 1e-4)
+        
+        X_train, X_test, y_train, y_test = train_test_split(Zxxs, label, test_size=0.2, random_state=42)
+
+        model_path = f"saved_models/{args.dataset}/{args.attack_method}/{segment}/"
+        if not os.path.exists(model_path):
+            os.makedirs(model_path)
+
+        clf = classifyVGG(X_train, y_train, X_test, y_test, trainable=True, output_directory=model_path)
+
+        benign_logits_lst.append(clf.predict(X_test))
+        adv_logits_lst.append(clf.predict_proba(X_test))
+
     pass
 
-def load_data(args):
+def load_data(args, segment):
     trace_path    = args.trace_path
     attack_method = args.attack_method
-    segment       = args.segment_id
     rate          = args.rate
     
     trace_num     = 10_000
@@ -44,18 +65,15 @@ def load_data(args):
     myloader = Loader(trace_path, label_path, trace_num, trace_len, rate, output_path)
     myloader.stft(nperseg=256)
 
-    return myloader.data, myloader.label
+    return myloader.data, myloader.label, myloader.Zxxs
 
 
 def main():
     args = parse_args()
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
     logging.info(args)
+    train_derived_model(args)
 
-    # Load data
-    data, label = load_data(args)
-    
-    logging.info(data.shape)
     
 
 if __name__ == "__main__":

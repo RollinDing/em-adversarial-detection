@@ -59,6 +59,11 @@ def parse_args():
                         default=False, 
                         type=bool,
                         help='using GradCAM to record the gradient of EM classifiers')
+    
+    parser.add_argument('--segment-num',
+                        default=6,
+                        type=int,
+                        help='the number of segments to analyze')
 
     args = parser.parse_args()
 
