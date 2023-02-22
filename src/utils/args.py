@@ -17,7 +17,7 @@ def parse_args():
     parser.add_argument('--segment-id', 
                         default=0, 
                         type=int,
-                        help='Select the batches to analyze from [0-27]')
+                        help='Select the batches to analyze from [0 -27]')
     
     parser.add_argument('--dataset', 
                         default='fm', 
