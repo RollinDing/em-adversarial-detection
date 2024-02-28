@@ -1,2 +1,5 @@
 # em-adversarial-detection
-Code and data for ASIACCS 2023: 'EMShepherd: Detecting Adversarial Samples via Side-channel Leakage' 
+Code for ASIACCS 2023: 'EMShepherd: Detecting Adversarial Samples via Side-channel Leakage' 
+
+2024.2
+**EM side channel data is coming soon!**
